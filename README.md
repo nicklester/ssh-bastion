@@ -129,6 +129,13 @@ Use `ssh -J $UserName@$BastionPublicIpAddress $TargetPrivateIpAddress` and repla
       <td>no</td>
       <td></td>
     </tr>
+     <tr>
+      <td>ClientSgModule</td>
+      <td>Additional security group to allow the Baston Instance to access resources granted access to this group</td>
+      <td></td>
+      <td>no</td>
+      <td></td>
+    </tr>
   </tbody>
 </table>
 

@@ -50,6 +50,10 @@ Parameters:
     Description: 'Name that is used to create the DNS entry with trailing dot, e.g. §{SubDomainNameWithDot}§{HostedZoneName}. Leave blank for naked (or apex and bare) domain. Requires HostedZoneModule parameter!'
     Type: String
     Default: 'ssh.'
+  ClientSgModule:
+    Description: 'Additional security group to allow the bastion to see resources granted access to this group'
+    Type: String
+    Default: ''
 Mappings:
   RegionMap:
     'ap-south-1':
@@ -89,6 +93,7 @@ Conditions:
   HasHostedZoneModule: !Not [!Equals [!Ref HostedZoneModule, '']]
   HasKeyName: !Not [!Equals [!Ref KeyName, '']]
   HasIAMUserSSHAccess: !Equals [!Ref IAMUserSSHAccess, 'true']
+  HasClientSgModule: !Not [!Equals [!Ref ClientSgModule, '']]
 Resources:
   RecordSet:
     Condition: HasHostedZoneModule
@@ -305,8 +310,11 @@ Resources:
       IamInstanceProfile: !Ref InstanceProfile
       ImageId: !FindInMap [RegionMap, !Ref 'AWS::Region', ImageId]
       InstanceType: !Ref InstanceType
-      SecurityGroups:
-      - !Ref SecurityGroup
+      SecurityGroups: !If
+      - HasClientSgModule
+      - - {Fn::ImportValue: !Sub "${ClientSgModule}-SecurityGroupId"}
+        - !Ref SecurityGroup
+      - - !Ref SecurityGroup
       KeyName: !If [HasKeyName, !Ref KeyName, !Ref 'AWS::NoValue']
       UserData:
         'Fn::Base64': !Sub |

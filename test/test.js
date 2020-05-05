@@ -1,6 +1,6 @@
 const test = require('ava');
 const cfntest = require('@cfn-modules/test');
-
+/*
 test.serial('defaults', async t => {
   const stackName = cfntest.stackName();
   try {
@@ -11,7 +11,19 @@ test.serial('defaults', async t => {
     t.pass();
   }
 });
+*/
+test.serial('client-sg', async t => {
+  const stackName = cfntest.stackName();
+  try {
+    t.log(await cfntest.createStack(`${__dirname}/client-sg.yml`, stackName, {}));
+    // what could we test here?
+  } finally {
+    t.log(await cfntest.deleteStack(stackName));
+    t.pass();
+  }
+});
 
+/*
 test.serial('key-name', async t => {
   const stackName = cfntest.stackName();
   const keyName = cfntest.keyName();
@@ -32,6 +44,6 @@ test.serial('key-name', async t => {
     t.pass();
   }
 });
-
+*/
 // TODO test AlertingModule
 // TODO test HostedZoneModule
